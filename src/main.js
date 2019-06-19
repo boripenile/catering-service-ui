@@ -26,7 +26,7 @@ Vue.use(Bars)
 Vue.use(vueEventCalendar, {locale: 'en'})
 Vue.use(VueAnimateNumber)
 Vue.use(VueGmaps, {
-  key: 'AIzaSyCpr35b_ZSoP8nbz0VnBjVz6ABb7iurRCU',
+  key: '',
   libraries: ['places'],
   version: '3'
 })
