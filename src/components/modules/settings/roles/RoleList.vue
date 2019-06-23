@@ -2,7 +2,8 @@
   <div class="todo-list">
    <!-- <p >Completed Tasks: {{todos.filter(todo => {return todo.done === true}).length}}</p>
     <p >Pending Tasks: {{todos.filter(todo => {return todo.done === false}).length}}</p>-->
-    <role v-on:delete-role="deleteRole" v-on:update-role="updateRole(role)" v-on:activate-role="activateRole(role)" v-for="role in roles" :role.sync="role"></role>
+    <role v-on:delete-role="deleteRole" v-on:update-role="updateRole(role)" 
+          v-on:activate-role="activateRole(role)" v-for="role in roles" :role.sync="role" :show="show"></role>
   </div>
 </template>
 
@@ -13,11 +14,15 @@ import { mapGetters } from 'vuex'
 
 export default {
   props: ['roles'],
+  show: false,
   components: {
     Role
   },
+  mounted () {
+    this.checkRole()
+  },
   computed: {
-    ...mapGetters(['getToken', 'getUser'])
+    ...mapGetters(['getToken', 'getUser', 'getRoles'])
   },
   methods: {
     deleteRole: function (role) {
@@ -47,6 +52,13 @@ export default {
           console.log(error)
         })
       })
+    },
+    checkRole () {
+      if (this.getRoles.find(x => x.name === 'superadmin')) {
+        this.show = true
+      } else {
+        this.show = false
+      }
     },
     activateRole: function (role) {
       var enabled = true

@@ -17,99 +17,25 @@
                 <div class="box">
                     <div class="box-body" style="min-height:400px;">
              
-                        <div class="movie-card">
-                            <div class="container-movie">
+                        <div class="col-lg-3">
                                 <a href="#"><img v-bind:src="getUser.image_url"
                                 width="190" height="200"
-                                alt="cover" class="cover-profile" /></a>
-                                <div class="hero">
-                                    <div class="details-profile">
-                                        <div class="title1">{{ getUser.first_name }} {{ getUser.last_name }} <span>Web Designer</span></div>
-                                        <div class="title2">The Battle of the Five Armies</div>
-                                    </div>
-                               
-                                    <!-- end details -->
-                                </div>
-                                <!-- end hero -->
-                                <div class="description-profile">
-                                    <div class="column1 text-center"> <span class="tag">html5</span> <span class="tag">php</span> <span class="tag">javascript</span><span class="tag">css</span><span class="tag">photoshop</span> </div>
-                                    <!-- end column1 -->
-                                    <div class="column2">
-                                        <p>Bilbo Baggins is swept into a quest to reclaim the lost Dwarf Kingdom of Erebor from the fearsome dragon Smaug. Approached out of the blue by the wizard Gandalf the Grey, Bilbo finds himself joining a company </p>
-                                        <div class="row">
-                                            <div class="col-xs-12 col-sm-4 emphasis">
-                                                <h2>
-                                        <strong>20,7K</strong>
-                                    </h2>
-                                                <p> <small>Followers</small> </p>
-                                                <button class="btn btn-success "> <span class="fa fa-plus-circle"></span>&nbsp;&nbsp;Follow</button>
-                                            </div>
-                                            <div class="col-xs-12 col-sm-4 emphasis">
-                                                <h2>
-                                        <strong>245</strong>
-                                    </h2>
-                                                <p> <small>Following</small> </p>
-                                                <button class="btn btn-info "> <span class="fa fa-user"></span>&nbsp;&nbsp;View Profile</button>
-                                            </div>
-                                            <div class="col-sm-4 emphasis">
-                                                <h2>
-                                        <strong>43</strong>
-                                    </h2>
-                                                <p> <small>Likes</small> </p>
-                                                <button class="btn btn-default"> <span class="fa fa-user"></span>&nbsp;&nbsp;Likes</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- end column2 -->
-                                </div>
-                                <!-- end description -->
-                            </div>
-                            <!-- end container -->
-                        </div>
-                        <!-- end movie-card -->
-                        <div class="col-sm-12">
-                            <br>
-                            <br>
-                            <br>
-                            <div class="col-xs-12 col-sm-12 text-center">
-                                <ul class="list-group">
-                                    <li class="list-group-item text-center"> <span class="pull-left">
-                                                <strong>Ratings</strong>
-                                            </span>
-                                        <div class="ratings">
-                                            <a href="#"> <span class="fa fa-star"></span> </a>
-                                            <a href="#"> <span class="fa fa-star"></span> </a>
-                                            <a href="#"> <span class="fa fa-star"></span> </a>
-                                            <a href="#"> <span class="fa fa-star"></span> </a>
-                                            <a href="#"> <span class="fa fa-star-o"></span> </a>
-                                        </div>
-                                    </li>
-                                    <li class="list-group-item text-right"> <span class="pull-left">
-                                                <strong>Joined</strong>
-                                            </span>2.13.2014</li>
-                                    <li class="list-group-item text-right"> <span class="pull-left">
-                                                <strong>Last seen</strong>
-                                            </span>Yesterday</li>
-                                    <li class="list-group-item text-right"> <span class="pull-left">
-                                                <strong>Nickname</strong>
-                                            </span>themesmile</li>
-                                </ul>
-                            </div>
-                            <div class="col-xs-12 col-sm-12 profile-name">
-                                <h2>{{ getUser.first_name }} {{ getUser.last_name }}
+                                alt="cover" /></a>
+                            <h2>{{ getUser.first_name }} {{ getUser.last_name }}
                                         <span class="pull-right social-profile">
                                             <i class="entypo-facebook-circled"></i>  <i class="entypo-twitter-circled"></i>  <i class="entypo-linkedin-circled"></i>  <i class="entypo-github-circled"></i>  <i class="entypo-gplus-circled"></i>
                                         </span>
                                     </h2>
-                                <hr>
-                                <dl class="dl-horizontal-profile"> <dt>Name</dt>
+                        </div>
+                        <!-- end movie-card -->
+                        <div class="col-lg-9 profile-name">
+                            <dl class="dl-horizontal-profile"> <dt>Name</dt>
                                     <dd>{{ getUser.first_name }} {{ getUser.last_name }}</dd> <dt>Email</dt>
                                     <dd>{{ getUser.email_address }}</dd> <dt>Phone</dt>
                                     <dd>{{ getUser.phone_number }}</dd> <dt>Active Periode</dt>
                                     <dd>02 Dec 2014</dd> <dt>Last Update</dt>
                                     <dd>02 Apr 2014</dd>
                                 </dl>
-                            </div>
                         </div>
                     </div>
                 </div>

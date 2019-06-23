@@ -8,7 +8,7 @@
             <h2>{{ user.first_name }} {{ user.last_name }} {{ user.other_name }}</h2>
             <div class="task-action"> <span v-on:click="showForm">
           <i class='ti-pencil'></i>
-        </span> <span v-on:click="deleteUser(user)">
+        </span> <span v-if="show" v-on:click="removeUserFromOrganisation(user)">
           <i class='ti-trash'></i>
         </span> </div>
         </div>
@@ -29,23 +29,23 @@
                 <div>
                     <label>Other Name</label>
                     <p>
-                        <el-input placeholder="Last name" v-model="user.other_name" type='text'></el-input>
+                        <el-input placeholder="Other name" v-model="user.other_name" type='text'></el-input>
                     </p>
-                    <input type="hidden" v-model="user.active">
+                  <input type="hidden" v-model="user.active">
                 </div>
                 <div>
                     <el-button v-on:click="hideForm" type="danger">Close</el-button>
-                    <el-button v-on:click="updateRole(user)" type="success">Update</el-button>
+                    <el-button v-on:click="updateUser(user)" type="success">Update</el-button>
                 </div>
             </div>
         </div>
-        <div class="todo-completed" v-on:click="activateUser(user)" v-show="!isEditing && user.active"> Enabled </div>
-        <div class="todo-pending" v-on:click="activateUser(user)" v-show="!isEditing && !user.active"> Disabled </div>
+        <div class="todo-completed" v-if="status" v-on:click="activateUser(user)" v-show="!isEditing && user.active"> Enabled </div>
+        <div class="todo-pending" v-if="status" v-on:click="activateUser(user)" v-show="!isEditing && !user.active"> Disabled </div>
     </div>
 </template>
 <script>
   export default {
-    props: ['user'],
+    props: ['user', 'show', 'status'],
     data: function () {
       return {
         isEditing: false
@@ -55,8 +55,8 @@
       activateUser: function (user) {
         this.$emit('activate-user', user)
       },
-      deleteUser: function (user) {
-        this.$emit('delete-user', user)
+      removeUserFromOrganisation: function (user) {
+        this.$emit('remove-user-from-organisation', user)
       },
       updateUser: function (user) {
         this.$emit('update-user', user)

@@ -66,6 +66,8 @@ router.beforeEach((to, from, next) => {
       next()
     } else if (to.name === 'registration') {
       next()
+    } else if (to.name === 'user-registration') {
+      next()
     } else {
       next({
         path: '/app/login',

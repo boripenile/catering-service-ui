@@ -24,8 +24,9 @@
                                 <li class="completed">Active roles <b>{{roles.filter(role => {return role.active === true}).length}}</b></li>
                                 <li class="pending">Inactive roles <b>{{roles.filter(role => {return role.active === false}).length}}</b></li>
 </ul>
-
-                            <create-role v-on:create-role="createRole"></create-role>
+                            
+                            <create-role v-on:create-role="createRole" :show.sync="show"></create-role>
+                            
                             </div>
                         </div>
                         <div class="col-md-9">
@@ -47,6 +48,7 @@ import RoleList from '../../settings/roles/RoleList.vue'
 import CreateRole from '../../settings/roles/CreateRole.vue'
 export default {
   name: 'Role',
+  show: false,
   components: {
     RoleList,
     CreateRole,
@@ -64,12 +66,20 @@ export default {
     }
   },
   mounted () {
-    this.loadRoles()
+    this.loadRoles(),
+    this.checkRole()
   },
   computed: {
-    ...mapGetters(['getUser', 'getToken', 'getApplication', 'getOrganisation'])
+    ...mapGetters(['getUser', 'getToken', 'getApplication', 'getOrganisation', 'getRoles'])
   },
   methods: {
+    checkRole () {
+      if (this.getRoles.find(x => x.name === 'superadmin')) {
+        this.show = true
+      } else {
+        this.show = false
+      }
+    },
     createRole: function (newRole) {
       this.isLoading = true
       this.$http.userapi.post('/roles', {
@@ -95,10 +105,38 @@ export default {
       })
     },
     loadRoles: function () {
+      console.log(this.getRoles)
+      if (this.getRoles.find(x => x.name === 'superadmin')) {
+        this.isLoading = true
+        this.$http.userapi.get('/roles', {
+          headers: {
+            'token': this.getToken
+          }
+        }).then(response => {
+          this.isLoading = false
+          if (response.data.code === 200) {
+            const myRoles = response.data.data
+            if (myRoles !== null && myRoles.length > 0) {
+              this.roles = []
+              for (var i = 0; i < myRoles.length; i++) {
+                this.roles.push(myRoles[i])
+              }
+            }
+          }
+        }).catch(error => {
+          this.isLoading = false
+          console.log(error)
+        })
+      } else {
+        this.loadRolesNotSuper()
+      }
+    },
+    loadRolesNotSuper: function () {
       this.isLoading = true
-      this.$http.userapi.get('/roles', {
+      this.$http.userapi.post('/roles', null, {
         headers: {
-          'token': this.getToken
+          'token': this.getToken,
+          'action': 'findRoleNotSuper'
         }
       }).then(response => {
         this.isLoading = false

@@ -106,7 +106,9 @@
       "@vue/prettier"
     ],
     "rules": {
-      "fix": true
+      "fix": true,
+      "quotes": ["error", "single"],
+      "no-console": true
     },
     "parserOptions": {
       "parser": "babel-eslint"

@@ -7,45 +7,14 @@
           <div class="box">
             <div class="box-body">
               <el-link @click="loginPage()" type="info" icon="el-icon-d-arrow-left">Back to Login</el-link> 
-              <h3><b>Start Registration</b></h3>
-              <p>Register your hotel and catering business with us today and 
-                have access to the best online service that takes care of your business.</p><br/>
+              <h3><b>Start Registration</b></h3><br/>
               <el-alert v-if="success"
                 v-bind:title="title"
                 v-bind:type="type"
                 v-bind:description="message"
                 show-icon>
               </el-alert>
-              <h4><b>Business Information</b></h4>
-              <p>Please complete all fields expect optional ones.</p>
-              <div class="row">
-                <div class="col-lg-3">
-                  <p>Business Name</p>
-                  <el-form-item prop="organisationName">
-                    <el-input v-model="registration.organisationName" placeholder="What is your business name"></el-input>
-                  </el-form-item>
-                </div>
-                <div class="col-lg-3">
-                  <p>Business Description</p>
-                  <el-form-item prop="workingDescription">
-                    <el-input v-model="registration.workingDescription" placeholder="Tell us about your business"></el-input>
-                  </el-form-item>
-                </div>
-                <div class="col-lg-3">
-                  <p>Referral Code <em>(optional)</em></p>
-                  <el-form-item prop="referralCode">
-                    <el-input v-model="registration.referralCode" placeholder="Enter a valid referral code"></el-input>
-                  </el-form-item>
-                </div>
-                <div class="col-lg-3">
-                  <p>Do you have a motto? <em>(optional)</em></p>
-                  <el-form-item prop="motto">
-                    <el-input v-model="registration.motto" placeholder="Enter your business motto"></el-input>
-                  </el-form-item>
-                </div>
-              </div>
-              <br/>
-              <h4><b>Contact Information</b></h4>
+              <h4><b>Basic Information</b></h4>
               <p>Please complete all fields expect optional ones. Ensure that you use a valid email address and phone number</p>
               <div class="row">
                 <div class="col-lg-3">
@@ -116,51 +85,6 @@ import sweetalert from 'sweetalert'
 
 export default {
   data: function () {
-    var validateOrganisationName = (rule, value, callback) => {
-      if (value === '') {
-        return callback(new Error('Please provide your business name'))
-      }
-      setTimeout(() => {
-        if (value.length < 5 || value.length > 60) {
-          callback(new Error('Name should be 5 to 60 characters.'))
-        } else {
-          callback()
-        }
-      }, 1000)
-    }
-    var validateDescription = (rule, value, callback) => {
-      if (value === '') {
-        return callback(new Error('Please tell us about your business'))
-      }
-      setTimeout(() => {
-        if (value.length < 20 || value.length > 100) {
-          callback(new Error('Description should be 20 to 100 characters'))
-        } else {
-          callback()
-        }
-      }, 1000)
-    }
-    var validateReferralCode = (rule, value, callback) => {
-      if (value === '') {
-        return callback()
-      } else if (value !== '' && (value.length < 10 || value.length > 10)) {
-        callback(new Error('Referral Code is invalid.'))
-      } else {
-        this.validateCode(value, callback)
-      }
-    }
-    var validateMotto = (rule, value, callback) => {
-      if (value === '') {
-        return callback()
-      }
-      setTimeout(() => {
-        if (value !== '' && (value.length < 5 || value.length > 50)) {
-          callback(new Error('Motto should be 5 to 50 characters.'))
-        } else {
-          callback()
-        }
-      }, 1000)
-    }
     var validateEmailAddress = (rule, value, callback) => {
       if (value === '') {
         return callback(new Error('Provide a valid email address'))
@@ -215,12 +139,7 @@ export default {
       title: '',
       type: '',
       message: 'Error message',
-      wrongReferralCode: '',
       registration: {
-        organisationName: '',
-        referralCode: '',
-        workingDescription: '',
-        motto: '',
         firstName: '',
         lastName: '',
         emailAddress: '',
@@ -230,18 +149,6 @@ export default {
         confirmPassword: ''
       },
       rules: {
-        organisationName: [
-          { validator: validateOrganisationName, trigger: 'blur' }
-        ],
-        workingDescription: [
-          { validator: validateDescription, trigger: 'blur' }
-        ],
-        referralCode: [
-          { validator: validateReferralCode, trigger: 'blur' }
-        ],
-        motto: [
-          { validator: validateMotto, trigger: 'blur' }
-        ],
         firstName: [
           { required: true, message: 'Provide your administrator\'s first name', trigger: 'blur' },
           { min: 3, max: 20, message: 'First name should be 3 to 20 characters.', trigger: 'blur' }
@@ -274,34 +181,7 @@ export default {
   },
   mounted () {
   },
-  computed: {
-    ...mapGetters(['getOrganisation'])
-  },
   methods: {
-    ...mapMutations(['setUser', 'setToken', 'setApplication', 'setRoles', 'setPermissions', 'setOrganisations', 'setOrganisation']),
-    validateCode: function (code, callback) {
-      this.$http.userapi.post('/users', null, {
-        headers: {
-          'referral_code': code,
-          'app_code': this.$store.state.appCode,
-          'action': 'validateReferralCode'
-        }
-      }).then(response => {
-        if (response.data.code === 400) {
-          if (callback) {
-            callback(response.data.message)
-          }
-        } else {
-          if (response.data.code === 200) {
-            if (callback) {
-              callback()
-            }
-          }
-        }
-      }).catch(error => {
-        console.log(error)
-      })
-    },
     validateRegistration: function (registrationForm) {
       this.$refs[registrationForm].validate((valid) => {
         if (valid) {
@@ -314,35 +194,13 @@ export default {
     resetRegistrationForm: function (registrationForm) {
       this.$refs[registrationForm].resetFields()
     },
-    showAlert: function (message) {
-      sweetalert({
-        title: 'Error',
-        text: message,
-        type: 'error',
-        confirmButtonColor: '#DD6B55',
-        confirmButtonText: 'OK',
-        closeOnConfirm: true
-      })
-    },
     loginPage: function () {
       this.$router.push('/app/login')
     },
-    proceedToHomePage: function () {
-      if (this.getOrganisation != null) {
-        this.$router.push('/profile')
-      } else {
-        this.$router.push('/app/my-companies')
-      }
-    },
     registerUser: function () {
       this.isLoading = true
+      console.log('Saving user...')
       this.$http.userapi.post('/users', {
-        'organisation': {
-          'organisationName': this.registration.organisationName,
-          'referralCode': this.registration.referralCode,
-          'workingDescription': this.registration.workingDescription,
-          'motto': this.registration.motto
-        },
         'firstName': this.registration.firstName,
         'lastName': this.registration.lastName,
         'emailAddress': this.registration.emailAddress,
@@ -381,6 +239,6 @@ export default {
 
 <style>
 .left-margin {
-  margin-right: 4em
+  margin-right: 4em;
 }
 </style>

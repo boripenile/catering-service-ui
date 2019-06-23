@@ -38,6 +38,7 @@ import Login from './components/Login.vue'
 import MyCompanies from './components/MyCompanies.vue'
 import VerifyEmail from './components/VerifyEmail.vue'
 import RegistrationPage from './components/Registration.vue'
+import UserRegistrationPage from './components/UserRegistration.vue'
 import NotFoundSecond from './components/modules/dashboard/500.vue'
 import SimpleTable from './components/modules/tables/SimpleTable.vue'
 import SelectTable from './components/modules/tables/SelectTable.vue'
@@ -80,6 +81,11 @@ const routes = [
         path: '/app/registration',
         name: 'registration',
         component: RegistrationPage
+      },
+      {
+        path: '/app/user-reg',
+        name: 'user-registration',
+        component: UserRegistrationPage
       }
     ]
   },

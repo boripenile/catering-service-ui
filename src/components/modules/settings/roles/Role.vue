@@ -3,7 +3,7 @@
         <div v-show="!isEditing">
             <h2>{{ role.role_name }}</h2>
             <p> {{ role.description }} </p>
-            <div class="task-action"> <span v-on:click="showForm">
+        <div v-if="show" class="task-action"> <span v-on:click="showForm">
           <i class='ti-pencil'></i>
         </span> <span v-on:click="deleteRole(role)">
           <i class='ti-trash'></i>
@@ -30,13 +30,13 @@
                 </div>
             </div>
         </div>
-        <div class="todo-completed" v-on:click="activateRole(role)" v-show="!isEditing && role.active"> Enabled </div>
-        <div class="todo-pending" v-on:click="activateRole(role)" v-show="!isEditing && !role.active"> Disabled </div>
+        <div v-if="show" class="todo-completed" v-on:click="activateRole(role)" v-show="!isEditing && role.active"> Enabled </div>
+        <div v-if="show" class="todo-pending" v-on:click="activateRole(role)" v-show="!isEditing && !role.active"> Disabled </div>
     </div>
 </template>
 <script>
   export default {
-    props: ['role'],
+    props: ['role', 'show'],
     data: function () {
       return {
         isEditing: false

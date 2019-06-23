@@ -1,6 +1,9 @@
 <template>
     <div class="create-todo">
-        <el-button type="info" v-on:click="openForm" v-show="!isCreating"><i class='ti-pencil-alt'></i>&nbsp;&nbsp;Add New Role</el-button>
+       <div v-if="show">
+         <el-button type="info" v-on:click="openForm" v-show="!isCreating"><i class='ti-pencil-alt'></i>&nbsp;&nbsp;Add New Role</el-button>
+       </div>
+        
         <div v-show="isCreating">
             <div class='content-todo-devin'>
                 <div>
@@ -25,6 +28,7 @@
 </template>
 <script>
 export default {
+  props: ['show'],
   data: function () {
     return {
       roleNameText: '',

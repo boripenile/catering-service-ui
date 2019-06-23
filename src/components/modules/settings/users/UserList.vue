@@ -2,7 +2,9 @@
   <div class="todo-list">
    <!-- <p >Completed Tasks: {{todos.filter(todo => {return todo.done === true}).length}}</p>
     <p >Pending Tasks: {{todos.filter(todo => {return todo.done === false}).length}}</p>-->
-    <user v-on:delete-user="deleteRole" v-on:update-user="updateUser(user)" v-on:activate-user="activateUser(user)" v-for="user in users" :user.sync="user"></user>
+    <user v-on:remove-user-from-organisation="removeUserFromOrganisation" v-on:update-user="updateUser(user)" 
+      v-on:activate-user="activateUser(user)" 
+      v-for="user in users" :user.sync="user" :show="show" :status="status"></user>
   </div>
 </template>
 
@@ -13,21 +15,42 @@ import { mapGetters } from 'vuex'
 
 export default {
   props: ['users'],
+  data: function () {
+    return {
+      show: false,
+      status: false
+    }
+  },
   components: {
     User
   },
+  mounted () {
+    this.checkRole()
+  },
   computed: {
-    ...mapGetters(['getToken', 'getUser'])
+    ...mapGetters(['getToken', 'getUser', 'getRoles', 'getOrganisation'])
   },
   methods: {
-    deleteRole: function (user) {
+    checkRole () {
+      if (this.getRoles.find(x => (x.name === 'admin' || x.name === 'superadmin'))) {
+        this.show = true
+      } else {
+        this.show = false
+      }
+      if (this.getRoles.find(x => (x.name === 'superadmin'))) {
+        this.status = true
+      } else {
+        this.status = false
+      }
+    },
+    removeUserFromOrganisation: function (user) {
       sweetalert({
         title: 'Are you sure?',
-        text: 'This User will be permanently deleted!',
+        text: 'This User will be removed permanently',
         type: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#DD6B55',
-        confirmButtonText: 'Yes, delete it!',
+        confirmButtonText: 'Yes, remove it!',
         closeOnConfirm: false
       },
       () => {
@@ -35,7 +58,8 @@ export default {
           headers: {
             'id': user.id,
             'action': 'deleteRole',
-            'token': this.getToken
+            'token': this.getToken,
+            'org_code': this.getOrganisation.code
           }
         }).then(response => {
           if (response.data.code === 200) {

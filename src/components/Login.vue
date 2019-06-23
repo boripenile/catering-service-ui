@@ -38,10 +38,17 @@
         
         <div class="row-block">
           <div class="row">
-            <div class="col-md-12 row-block">
-              <el-button type="primary" class="btn btn-primary btn-block" round 
-                @click="registrationPage()">Create New Account</el-button>
+            <div class="col-md-7">
+              <el-link type="warning" @click="registrationPage()"><b>Become a Service Provider</b></el-link>  
             </div>
+            <div class="col-md-5">
+              <el-link type="danger" @click="userRegistrationPage()"><b>Become a User</b></el-link>
+            </div>
+          </div>
+        </div>
+        <div class="row-block">
+          <div class="row">
+            
           </div>
         </div>
       </div>
@@ -78,6 +85,9 @@ export default {
     },
     registrationPage: function () {
       this.$router.push('/app/registration')
+    },
+    userRegistrationPage: function () {
+      this.$router.push('/app/user-reg')
     },
     login: function () {
       const username = this.username
