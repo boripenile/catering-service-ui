@@ -4,7 +4,6 @@
         <div class="vld-parent">
           <loading :active.sync="isLoading" 
           :is-full-page="true"></loading></div>
-        <br/>
         <center><h2>Login</h2></center>
         <hr>
         <form role="form">

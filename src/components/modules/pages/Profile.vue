@@ -36,6 +36,39 @@
                                     <dd>02 Dec 2014</dd> <dt>Last Update</dt>
                                     <dd>02 Apr 2014</dd>
                                 </dl>
+                          <!-- <permission-detail :permissions="permissions" :show="show"></permission-detail> -->
+                        <div>
+                          <h4 class="header">Basic Permisisons</h4>
+                          <el-tag
+                            :key="permission"
+                            v-for="permission in basicBermissions" :closable="false" :disable-transitions="false" @close="removePermission(permission)">
+                            {{permission.description}}
+                          </el-tag>
+                        </div>
+                        <div>
+                          <h4 class="header">User Permisisons</h4>
+                          <el-tag
+                            :key="permission"
+                            v-for="permission in selfPermissions" :closable="show" :disable-transitions="false" @close="removePermission(permission)">
+                            {{permission.description}}
+                          </el-tag>
+                          <el-popover
+                            placement="right"
+                            width="400"
+                            trigger="click">
+                            <el-table ref="multipleRows" :data="basicBermissions" :row-key="name" stripe 
+                              @selection-change="handleSelectionChange">
+                              <el-table-column type="selection"></el-table-column>
+                              <el-table-column prop="name" label="Name" 
+                                :show-overflow-tooltip="true"></el-table-column>
+                              <el-table-column prop="description" label="Description" 
+                                :show-overflow-tooltip="true"></el-table-column>                           
+                            </el-table>
+                              <el-button slot="reference">Add permission</el-button>
+                              <el-button @click="addPermissionsToUser">Set Permissions</el-button>
+                          </el-popover>
+                          
+                        </div>
                         </div>
                     </div>
                 </div>
@@ -47,9 +80,74 @@
 <script>
   import { mapGetters } from 'vuex'
   export default {
+    data: function () {
+      return {
+        basicBermissions: [],
+        selfPermissions: [],
+        show: false,
+        permissions: [],
+        multipleSelection: [],
+        userPermissions: [],
+        selection: {}
+      }
+    },
     name: 'Profile',
     computed: {
-      ...mapGetters(['getUser', 'getApplication', 'getOrganisation'])
+      ...mapGetters(['getUser', 'getApplication', 'getOrganisation', 'getRoles', 'getPermissions', 'getToken'])
+    },
+    mounted () {
+      this.checkRole(),
+      this.basicBermissions = this.getPermissions.basic,
+      this.selfSermissions = this.getPermissions.self
+    },
+    methods: {
+      removePermission (permission) {
+        return;
+      },
+      checkRole: function () {
+        if (this.getRoles.find(x => (x.name === 'superadmin' || x.name === 'admin'))) {
+          this.show = true
+        } else {
+          this.show = false
+        }
+      },
+      loadPermissions: function () {
+        this.$http.userapi.post('/roles', {
+
+        }, {
+          headers: {
+            'token': this.getToken,
+            'action': '' 
+          }
+        }).then(response => {
+
+        }).catch(error => {
+
+        })
+      },
+      tableRowClassName({row, rowIndex}) {
+        if (rowIndex % 2 === 0) {
+          return 'success-row';
+        }
+        return '';
+      },
+      handleSelectionChange: function (val) {
+        this.multipleSelection = val
+      },
+      addPermissionsToUser: function () {
+        this.userPermissions = []
+        for (var i = 0; i < this.multipleSelection.length; i++ ) {
+          console.log(this.multipleSelection[i].name)
+          this.userPermissions.push(this.multipleSelection[i].name)
+        }
+        console.log('Total selection ' + this.userPermissions.length)
+      }
     }
   }
 </script>
+<style>
+  .el-tag + .el-tag {
+    margin-left: 10px;
+    margin-bottom: 10px;
+  }
+</style>
