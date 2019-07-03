@@ -132,6 +132,7 @@ export default {
 
 <style>
 .login-box {
-  margin: 0 auto;
+  margin: auto;
+  padding: 30px;
 }
 </style>

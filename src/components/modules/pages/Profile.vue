@@ -16,9 +16,8 @@
             <section class="content">
                 <div class="box">
                     <div class="box-body" style="min-height:400px;">
-             
                         <div class="col-lg-3">
-                                <a href="#"><img v-bind:src="getUser.image_url"
+                                <a href="#"><img v-bind:src="getUser.image_url !== null ? getUser.image_url : defaultImage"
                                 width="190" height="200"
                                 alt="cover" /></a>
                             <h2>{{ getUser.first_name }} {{ getUser.last_name }}
@@ -37,37 +36,21 @@
                                     <dd>02 Apr 2014</dd>
                                 </dl>
                           <!-- <permission-detail :permissions="permissions" :show="show"></permission-detail> -->
-                        <div>
+                        <div v-if="!superUser">
                           <h4 class="header">Basic Permisisons</h4>
                           <el-tag
                             :key="permission"
-                            v-for="permission in basicBermissions" :closable="false" :disable-transitions="false" @close="removePermission(permission)">
+                            v-for="permission in basicPermissions" :closable="false" :disable-transitions="false">
                             {{permission.description}}
                           </el-tag>
                         </div>
-                        <div>
+                        <div v-if="!superUser">
                           <h4 class="header">User Permisisons</h4>
                           <el-tag
                             :key="permission"
-                            v-for="permission in selfPermissions" :closable="show" :disable-transitions="false" @close="removePermission(permission)">
+                            v-for="permission in selfPermissions" :closable="false" :disable-transitions="false">
                             {{permission.description}}
                           </el-tag>
-                          <el-popover
-                            placement="right"
-                            width="400"
-                            trigger="click">
-                            <el-table ref="multipleRows" :data="basicBermissions" :row-key="name" stripe 
-                              @selection-change="handleSelectionChange">
-                              <el-table-column type="selection"></el-table-column>
-                              <el-table-column prop="name" label="Name" 
-                                :show-overflow-tooltip="true"></el-table-column>
-                              <el-table-column prop="description" label="Description" 
-                                :show-overflow-tooltip="true"></el-table-column>                           
-                            </el-table>
-                              <el-button slot="reference">Add permission</el-button>
-                              <el-button @click="addPermissionsToUser">Set Permissions</el-button>
-                          </el-popover>
-                          
                         </div>
                         </div>
                     </div>
@@ -78,31 +61,60 @@
     </transition>
 </template>
 <script>
-  import { mapGetters } from 'vuex'
+  import { mapGetters, mapMutations } from 'vuex'
   export default {
     data: function () {
       return {
-        basicBermissions: [],
+        loading: false,
+        defaultImage: 'static/img/default_image.png',
+        basicPermissions: [],
         selfPermissions: [],
         show: false,
+        superUser: false,
+        adminUser: false,
         permissions: [],
         multipleSelection: [],
         userPermissions: [],
-        selection: {}
+        selection: {},
+        centerDialogVisible: false
       }
     },
     name: 'Profile',
     computed: {
       ...mapGetters(['getUser', 'getApplication', 'getOrganisation', 'getRoles', 'getPermissions', 'getToken'])
     },
+    components: {
+    },
     mounted () {
       this.checkRole(),
-      this.basicBermissions = this.getPermissions.basic,
-      this.selfSermissions = this.getPermissions.self
+      this.isSuper(),
+      this.isAdmin(),
+      this.basicPermissions = this.getPermissions.basic,
+      this.selfPermissions = this.getPermissions.self
     },
     methods: {
-      removePermission (permission) {
+      ...mapMutations(['setUserId']),
+      showPermissions: function () {
+        this.centerDialogVisible = true
+        this.loading = true
+        this.loadPermissions()
+      },
+      removePermission: function (permission) {
         return;
+      },
+      isSuper: function () {
+        if (this.getRoles.find(x => (x.name === 'superadmin'))) {
+          this.superUser = true
+        } else {
+          this.superUser = false
+        }
+      },
+      isAdmin: function () {
+        if (this.getRoles.find(x => (x.name === 'admin'))) {
+          this.adminUser = true
+        } else {
+          this.adminUser = false
+        }
       },
       checkRole: function () {
         if (this.getRoles.find(x => (x.name === 'superadmin' || x.name === 'admin'))) {
@@ -112,35 +124,21 @@
         }
       },
       loadPermissions: function () {
-        this.$http.userapi.post('/roles', {
-
-        }, {
+        this.$http.userapi.post('/permissions', null, {
           headers: {
             'token': this.getToken,
-            'action': '' 
+            'action': 'findPermissionNotSuper' 
           }
         }).then(response => {
-
+          this.permissions = []
+          for (var i = 0; i < response.data.data.length - 1; i++) {
+            this.permissions.push(response.data.data[i])
+          }
+          this.loading = false
         }).catch(error => {
-
+          this.loading = false
+          console.log(error)
         })
-      },
-      tableRowClassName({row, rowIndex}) {
-        if (rowIndex % 2 === 0) {
-          return 'success-row';
-        }
-        return '';
-      },
-      handleSelectionChange: function (val) {
-        this.multipleSelection = val
-      },
-      addPermissionsToUser: function () {
-        this.userPermissions = []
-        for (var i = 0; i < this.multipleSelection.length; i++ ) {
-          console.log(this.multipleSelection[i].name)
-          this.userPermissions.push(this.multipleSelection[i].name)
-        }
-        console.log('Total selection ' + this.userPermissions.length)
       }
     }
   }
@@ -149,5 +147,12 @@
   .el-tag + .el-tag {
     margin-left: 10px;
     margin-bottom: 10px;
+  }
+  .scroll {
+    height: 400px;
+    overflow: auto;
+  }
+  .float-right {
+    float: right;
   }
 </style>

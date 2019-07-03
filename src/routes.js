@@ -37,6 +37,7 @@ import Profile from './components/modules/pages/Profile.vue'
 import Login from './components/Login.vue'
 import MyCompanies from './components/MyCompanies.vue'
 import VerifyEmail from './components/VerifyEmail.vue'
+import UserDetails from './components/modules/pages/settings/UserDetails.vue'
 import RegistrationPage from './components/Registration.vue'
 import UserRegistrationPage from './components/UserRegistration.vue'
 import NotFoundSecond from './components/modules/dashboard/500.vue'
@@ -116,6 +117,10 @@ const routes = [
         path: 'users',
         name: 'users',
         component: User
+      }, {
+        path: 'user-details/:username',
+        name: 'user-details',
+        component: UserDetails
       }, {
         path: '/chat',
         name: 'chat',

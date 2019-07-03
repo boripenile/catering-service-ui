@@ -7,7 +7,7 @@
             <ol class="breadcrumb">
                 <li><router-link to="/"> <i class="ti-home"></i></router-link></li>
                 <li><a href="#">Settings</a></li>
-                <li class="active">Role Management</li>
+                <li class="active">Roles</li>
             </ol>
         </section>
             <!-- Main content -->

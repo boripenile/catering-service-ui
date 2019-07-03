@@ -2,9 +2,10 @@
   <div class="todo-list">
    <!-- <p >Completed Tasks: {{todos.filter(todo => {return todo.done === true}).length}}</p>
     <p >Pending Tasks: {{todos.filter(todo => {return todo.done === false}).length}}</p>-->
-    <user v-on:remove-user-from-organisation="removeUserFromOrganisation" v-on:update-user="updateUser(user)" 
+    <user v-on:remove-user-from-organisation="removeUserFromOrganisation" v-for="user in users" :user.sync="user"
+      v-on:update-user="updateUser(user)" 
       v-on:activate-user="activateUser(user)" 
-      v-for="user in users" :user.sync="user" :show="show" :status="status"></user>
+      :show="show" :status="status" v-on:view-details="viewUserDetails(user)"></user>
   </div>
 </template>
 
@@ -95,6 +96,10 @@ export default {
       }).catch(error => {
         console.log(error)
       })
+    },
+    viewUserDetails: function (user) {
+      console.log(user)
+      this.$router.push('/user-details/' + user.username)
     },
     updateRole: function (user) {
       if (user.role_name.length > 0 && user.description.length > 0) {

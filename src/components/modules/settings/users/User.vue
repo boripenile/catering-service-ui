@@ -2,11 +2,11 @@
     <div class="todo-content">
         <div v-show="!isEditing">
             <div class="pull-left right-padding hidden-xs clearfix">
-              <a href="#"><img v-bind:src="user.image_url"
+              <a href="#"><img v-bind:src="user.image_url !== null ? user.image_url : defaultImage"
                 width="80" height="83" alt="user.id" /></a>
             </div>
             <h2>{{ user.first_name }} {{ user.last_name }} {{ user.other_name }}</h2>
-            <div class="task-action"> <span v-on:click="showForm">
+            <div class="task-action"> <span v-on:click="viewDetails">
           <i class='ti-pencil'></i>
         </span> <span v-if="show" v-on:click="removeUserFromOrganisation(user)">
           <i class='ti-trash'></i>
@@ -48,7 +48,8 @@
     props: ['user', 'show', 'status'],
     data: function () {
       return {
-        isEditing: false
+        isEditing: false,
+        defaultImage: './static/img/default_image.png'
       }
     },
     methods: {
@@ -60,6 +61,10 @@
       },
       updateUser: function (user) {
         this.$emit('update-user', user)
+        this.hideForm()
+      },
+      viewDetails: function (user) {
+        this.$emit('view-details', user)
         this.hideForm()
       },
       showForm: function () {

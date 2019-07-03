@@ -5,6 +5,7 @@ Vue.use(Vuex)
 
 const state = {
   user: {},
+  userId: null,
   token: null,
   permissions: {},
   roles: [],
@@ -15,6 +16,9 @@ const state = {
 }
 
 const mutations = {
+  setUserId (state, userId) {
+    state.userId = userId
+  },
   setUser (state, user) {
     state.user = user
   },
@@ -39,6 +43,9 @@ const mutations = {
 }
 
 const getters = {
+  getUserId () {
+    return state.userId
+  },
   getUser () {
     return state.user
   },

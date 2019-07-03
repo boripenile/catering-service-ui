@@ -20,12 +20,12 @@
                         <div class="col-md-3">
                             <div class="side-todo">
                             <ul>
-                                <li class="clearfix"><img v-bind:src="getUser.image_url" alt="avatar"> <div class="about"><div class="name">{{ getUser.first_name}} {{ getUser.last_name }}</div> <div class="status"><i class="fa fa-circle online"></i> online </div></div></li>
+                                <li class="clearfix"><img v-bind:src="getUser.image_url !== null ? getUser.image_url : defaulImage" alt="avatar"> 
+                                <div class="about"><div class="name">{{ getUser.first_name}} {{ getUser.last_name }}</div> <div class="status"><i class="fa fa-circle online"></i> online </div></div></li>
                                 <li class="completed">Active users <b>{{users.filter(user => {return user.active === true}).length}}</b></li>
                                 <li class="pending">Inactive users <b>{{users.filter(user => {return user.active === false}).length}}</b></li>
 </ul>
 
-                            <create-user v-on:create-user="createRole"></create-user>
                             </div>
                         </div>
                         <div class="col-md-9">
@@ -55,11 +55,13 @@ export default {
   data: function () {
     return {
       isLoading: false,
+      defaulImage: 'static/img/default_image.png',
       users: [{
         id: 1,
         first_name: 'Murtadha',
         last_name: 'Ali',
         other_name: 'Olanrewaju',
+        username: 'testuser',
         active: true
       }]
     }
