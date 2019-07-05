@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import ElementUI from 'element-ui'
+import lang from 'element-ui/lib/locale/lang/en';
+import locale from 'element-ui/lib/locale';
 import VueRouter from 'vue-router'
 import Bars from 'vuebars'
 import vueEventCalendar from 'vue-event-calendar'
@@ -19,6 +21,9 @@ window.$ = window.jQuery = $
 // Resource logic
 // Vue.use(Resource)
 // Vue.http.options.emulateJSON = true
+
+// configure language
+locale.use(lang);
 Vue.use(axios)
 Vue.use(VueRouter)
 Vue.use(ElementUI)
@@ -80,6 +85,8 @@ router.beforeEach((to, from, next) => {
         path: '/profile',
         query: {redirect: to.fullPath}
       })
+    } else if (to.name === 'user-details'){
+      next()
     } else {
       next()
     }
@@ -103,7 +110,7 @@ new Vue({
 }).$mount('#app')
 
 require('bootstrap')
-// require('admin-lte')
+require('admin-lte')
 require('../node_modules/admin-lte/dist/js/app.min.js')
 require('../node_modules/admin-lte/dist/js/demo.js')
 require('../node_modules/admin-lte/plugins/slimScroll/jquery.slimscroll.js')

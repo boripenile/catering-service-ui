@@ -17,19 +17,62 @@
                   :is-full-page="true"></loading></div>
                 <div class="todo-devin">
                     <div class="row">
-                        <div class="col-md-3">
-                            <div class="side-todo">
-                            <ul>
-                                <li class="clearfix"><img v-bind:src="getUser.image_url !== null ? getUser.image_url : defaulImage" alt="avatar"> 
-                                <div class="about"><div class="name">{{ getUser.first_name}} {{ getUser.last_name }}</div> <div class="status"><i class="fa fa-circle online"></i> online </div></div></li>
-                                <li class="completed">Active users <b>{{users.filter(user => {return user.active === true}).length}}</b></li>
-                                <li class="pending">Inactive users <b>{{users.filter(user => {return user.active === false}).length}}</b></li>
-</ul>
-
-                            </div>
-                        </div>
-                        <div class="col-md-9">
-                            <user-list v-bind:users="users"></user-list>
+                        <div class="col-md-12">
+                            <el-dialog
+                              title="Invite User to your System"
+                              :visible.sync="isInvitation"
+                              width="70%"
+                              center>
+                              <p type="warning" class="el-icon-warning" style="color: #E6A23C;" v-if="error"> {{ message }} </p><br/>
+                              <invite-user v-on:send-invite="inviteUser" v-bind:user="userInfo" 
+                                  v-bind:searchEmail="searchEmail" v-on:search-user="searchUser" v-bind:roleName="roleName"
+                                  v-bind:hasDetails="hasDetails" v-bind:roles="roles" v-bind:callback="loadRoles"></invite-user>
+                            </el-dialog>
+                            <el-link icon="el-icon-plus" class="pull-right" style="padding: 0.8em;" @click="openInvite">Invite Existing User</el-link>
+                            <el-table
+                              :data="users.filter(data => !search || data.first_name.toLowerCase().includes(search.toLowerCase()))"
+                              style="width: 100%">
+                              <el-table-column type="expand">
+                                <template slot-scope="scope">
+                                  <div class="pull-left hidden-xs clearfix">
+                                    <a href="#"><img v-bind:src="scope.row.image_url !== null ? scope.row.image_url : defaultImage"
+                                      style="width: 80px; height: 83px; margin-right: 0.7em;" :alt="scope.row.id" /></a>
+                                  </div>
+                                  <div>
+                                    <p>Name: {{ scope.row.first_name }} {{ scope.row.last_name }} {{ scope.row.other_name }}</p>
+                                    <p>Email address: {{ scope.row.email_address }}</p>
+                                    <p>Username: {{ scope.row.username }}</p>
+                                  </div>                                
+                                </template>
+                              </el-table-column>
+                              <el-table-column
+                                label="First name"
+                                prop="first_name">
+                              </el-table-column>
+                              <el-table-column
+                                label="Last name"
+                                prop="last_name">
+                              </el-table-column>
+                              <el-table-column
+                                align="right">
+                                <template slot="header" slot-scope="scope">
+                                  <el-input
+                                    v-model="search"
+                                    size="mini"
+                                    placeholder="Type first name to search"/>
+                                </template>
+                                <template slot-scope="scope">
+                                  <el-button
+                                    size="mini" v-if="show" icon="el-icon-edit"
+                                    @click="viewUserDetails(scope.row)">Edit</el-button>
+                                  <el-button
+                                    size="mini"
+                                    type="danger" v-if="show" icon="el-icon-delete"
+                                    @click="handleDelete(scope.$index, scope.row)">Delete</el-button>
+                                </template>
+                              </el-table-column>
+                            </el-table>
+                            <!-- <user-list v-bind:users="users"></user-list> -->
                         </div>
                     </div>
                 </div>
@@ -43,19 +86,32 @@ import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
 import { mapGetters } from 'vuex'
 import sweetalert from 'sweetalert'
-import UserList from '../../settings/users/UserList.vue'
+// import UserList from '../../settings/users/UserList.vue'
 import CreateUser from '../../settings/users/CreateUser.vue'
+import InviteUser from '../../settings/users/InviteUser.vue'
 export default {
-  name: 'Role',
+  name: 'User',
   components: {
-    UserList,
+    // UserList,
     CreateUser,
-    Loading
+    Loading,
+    InviteUser
   },
   data: function () {
     return {
+      message: '',
+      error: false,
+      show: false,
+      status: false,
+      isInvitation: false,
+      search: '',
+      userInfo: {},
+      roles: [],
+      hasDetails: false,
+      searchEmail: '',
       isLoading: false,
-      defaulImage: 'static/img/default_image.png',
+      roleName: '',
+      defaultImage: 'static/img/default_image.png',
       users: [{
         id: 1,
         first_name: 'Murtadha',
@@ -67,12 +123,125 @@ export default {
     }
   },
   mounted () {
-    this.loadUsers()
+    this.loadUsers(),
+    this.checkRole()
   },
   computed: {
-    ...mapGetters(['getUser', 'getToken', 'getApplication', 'getOrganisation'])
+    ...mapGetters(['getUser', 'getToken', 'getApplication', 'getOrganisation', 'getRoles'])
   },
   methods: {
+    openInvite: function () {
+      this.message = ''
+      this.error = false
+      this.userInfo = {}
+      this.hasDetails = false
+      this.isInvitation = true
+    },
+    searchUser: function (param, callback) {
+      this.$http.userapi.post('/users', null, {
+        headers: {
+          'search_parameter': param,
+          'action': 'findUserByEmailOrUsername',
+          'token': this.getToken
+        }
+      }).then(response => {
+        console.log(response)
+        if (response.data.code === 200) {
+          this.userInfo = response.data.data
+          if (this.userInfo) {
+            if (callback) {
+              callback()
+            }
+            this.hasDetails = true
+            this.error = false
+          }
+        } else {
+          this.error = true
+          this.hasDetails = false
+          this.message = response.data.message
+        }
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+    loadRoles: function () {
+      console.log(this.getRoles)
+      if (this.getRoles.find(x => x.name === 'superadmin')) {
+        this.$http.userapi.get('/roles', {
+          headers: {
+            'token': this.getToken
+          }
+        }).then(response => {
+          if (response.data.code === 200) {
+            const myRoles = response.data.data
+            if (myRoles !== null && myRoles.length > 0) {
+              this.roles = []
+              for (var i = 0; i < myRoles.length; i++) {
+                this.roles.push(myRoles[i])
+              }
+            }
+          }
+        }).catch(error => {
+          console.log(error)
+        })
+      } else {
+        this.loadRolesNotSuper()
+      }
+    },
+    loadRolesNotSuper: function () {
+      this.$http.userapi.post('/roles', null, {
+        headers: {
+          'token': this.getToken,
+          'action': 'findRoleNotSuper'
+        }
+      }).then(response => {
+        if (response.data.code === 200) {
+          const myRoles = response.data.data
+          if (myRoles !== null && myRoles.length > 0) {
+            this.roles = []
+            for (var i = 0; i < myRoles.length; i++) {
+              this.roles.push(myRoles[i])
+            }
+          }
+        }
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+    viewUserDetails: function (user) {
+      console.log(user)
+      this.$router.push('/user-details/' + user.username)
+    },
+    inviteUser: function (user, role) {
+      console.log('inviting user now... ' + user.email_address + ', Role name: ' + role)
+      this.$http.userapi.post('/users', null, {
+        headers: {
+          'email_address': user.email_address,
+          'action': 'sendInviteToUser',
+          'token': this.getToken
+        }
+      }).then(response => {
+        console.log(response)
+        if (response.data.code === 200) {
+          this.isInvitation = false
+          sweetalert('Invitation!', 'An invitation has been sent to ' + user.email_address, 'success')
+        }
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+    checkRole: function () {
+      if (this.getRoles.find(x => (x.name === 'admin' || x.name === 'superadmin'))) {
+        this.show = true
+      } else {
+        this.show = false
+      }
+      if (this.getRoles.find(x => (x.name === 'superadmin'))) {
+        this.status = true
+      } else {
+        this.status = false
+      }
+    },
     createRole: function (newRole) {
       this.isLoading = true
       this.$http.userapi.post('/users', {

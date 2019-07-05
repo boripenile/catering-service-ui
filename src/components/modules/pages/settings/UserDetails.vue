@@ -37,7 +37,7 @@
                                     <dd>{{ user.email_address }}</dd> <dt>Phone</dt>
                                     <dd>{{ user.phone_number }}</dd> <dt>Active Periode</dt>
                                     <dd>02 Dec 2014</dd> <dt>Last Update</dt>
-                                    <dd>02 Apr 2014</dd>
+                                    <dd>{{ user.updated_at }}</dd>
                                 </dl>
                           <!-- <permission-detail :permissions="permissions" :show="show"></permission-detail> -->
                         <div v-if="!superUser">
@@ -61,7 +61,7 @@
                           <el-dialog
                             title="Add Permissions"
                             :visible.sync="centerDialogVisible"
-                            width="35%"
+                            width="70%"
                             center>
                             <div class="scroll">
                               <el-table ref="multipleSelection"
@@ -72,20 +72,16 @@
                                   type="selection"
                                   width="45">
                                 </el-table-column>
-                                <el-table-column class="hidden-xs"
-                                  property="permission_name"
-                                  label="Name"
-                                  width="180">
-                                </el-table-column>
                                 <el-table-column
                                   property="description"
                                   label="Description"
+                                  width="700"
                                   show-overflow-tooltip>
                                 </el-table-column>
                               </el-table>
                             </div>
                             <span slot="footer" class="dialog-footer">
-                              <el-button @click="centerDialogVisible = false">Decline</el-button>
+                              <el-button @click="centerDialogVisible = false">Cancel</el-button>
                               <el-button type="success" @click="addPermissionsToUser">Confirm</el-button>
                             </span>
                           </el-dialog>
@@ -257,11 +253,22 @@
           console.log(this.multipleSelection[i].permission_name)
           this.userPermissions.push(this.multipleSelection[i].permission_name)
         }
-        this.processPermissionForUser(this.reload)
+        this.processPermissionForUser(this.includePermissions)
         this.centerDialogVisible = false
       },
-      reload: function () {
-        this.$router.push('/user-details/' + this.username)
+      includePermissions: function () {
+        if (this.multipleSelection.length > 0) {
+          for (var j = 0; j < this.multipleSelection.length; j++) {
+            var record = {
+              'name': this.multipleSelection[j].permission_name,
+              'description': this.multipleSelection[j].description
+            }
+            const found = this.selfPermissions.find(x => x.name === record.name)
+            if (!found) {
+              this.selfPermissions.push(record)
+            }
+          }
+        }
       },
       processPermissionForUser: function (callback) {
         this.loading = true
