@@ -37,6 +37,7 @@ import Profile from './components/modules/pages/Profile.vue'
 import Login from './components/Login.vue'
 import MyCompanies from './components/MyCompanies.vue'
 import VerifyEmail from './components/VerifyEmail.vue'
+import ApproveUserRequest from './components/ApproveUserRequest.vue'
 import UserDetails from './components/modules/pages/settings/UserDetails.vue'
 import RegistrationPage from './components/Registration.vue'
 import UserRegistrationPage from './components/UserRegistration.vue'
@@ -77,6 +78,11 @@ const routes = [
         path: '/app/verify/:code',
         name: 'verify-email',
         component: VerifyEmail
+      },
+      {
+        path: '/app/request/:code',
+        name: 'approve-request',
+        component: ApproveUserRequest
       },
       {
         path: '/app/registration',

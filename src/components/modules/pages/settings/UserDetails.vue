@@ -40,7 +40,7 @@
                                     <dd>{{ user.updated_at }}</dd>
                                 </dl>
                           <!-- <permission-detail :permissions="permissions" :show="show"></permission-detail> -->
-                        <div v-if="!superUser">
+                        <div v-if="user.id > 1">
                           <h4 class="header">Basic Permisisons</h4>
                           <hr/>
                           <el-tag
@@ -49,7 +49,7 @@
                             {{permission.description}}
                           </el-tag>
                         </div>
-                        <div v-if="!superUser">
+                        <div v-if="user.id > 1">
                           <h4 class="header">User Permisisons</h4>
                           <el-link icon="el-icon-edit" @click="showPermissions">Update Self Permissions</el-link>
                           <hr/>
@@ -61,7 +61,6 @@
                           <el-dialog
                             title="Add Permissions"
                             :visible.sync="centerDialogVisible"
-                            width="70%"
                             center>
                             <div class="scroll">
                               <el-table ref="multipleSelection"
@@ -75,7 +74,6 @@
                                 <el-table-column
                                   property="description"
                                   label="Description"
-                                  width="700"
                                   show-overflow-tooltip>
                                 </el-table-column>
                               </el-table>

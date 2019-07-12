@@ -69,6 +69,8 @@ router.beforeEach((to, from, next) => {
       next()
     } else if (to.name === 'verify-email') {
       next()
+    } else if (to.name === 'approve-request') {
+      next()
     } else if (to.name === 'registration') {
       next()
     } else if (to.name === 'user-registration') {
