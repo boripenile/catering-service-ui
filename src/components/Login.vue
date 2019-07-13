@@ -1,9 +1,6 @@
 <template>
   <transition name="el-zoom-in-top">
       <div class="login-box">
-        <div class="vld-parent">
-          <loading :active.sync="isLoading" 
-          :is-full-page="true"></loading></div>
         <center><h2>Login</h2></center>
         <hr>
         <form role="form">
@@ -17,31 +14,24 @@
             <label for="inputPassword">Password</label>
             <input type="password" id="inputPassword" v-model="password" class="form-control">
           </div>
-          <div class="checkbox pull-left">
-            <label>
-              <input type="checkbox">Remember me
-            </label>
-          </div>
-          <el-button type="primary" round class="btn btn btn-primary pull-right" 
-          @click.prevent="login">Log In  <i class="el-icon-d-arrow-right"></i></el-button>
+          <el-button :loading="loading" :disabled="username.length < 5 || password.length < 6" type="primary" round class="btn btn btn-primary pull-right" 
+          @click.prevent="login">Log In</el-button>
         </form>
         <a class="forgotLnk" href="#"></a>
         <div class="or-box">
           <center>
             <span class="text-center login-with">
-              Login or
-              <b>Sign Up</b>
+              <b>Sign Up to Become</b>
             </span>
           </center>
         </div>
-        
         <div class="row-block">
           <div class="row">
-            <div class="col-md-7">
-              <el-link type="warning" @click="registrationPage()"><b>Become a Service Provider</b></el-link>  
+            <div class="col-md-6">
+              <el-link class="pull-left" type="warning" @click="registrationPage()"><i class="el-icon-s-shop" style="font-size: 20px;"></i> Provider</el-link>  
             </div>
-            <div class="col-md-5">
-              <el-link type="danger" @click="userRegistrationPage()"><b>Become a User</b></el-link>
+            <div class="col-md-6">
+              <el-link class="pull-right" type="danger" @click="userRegistrationPage()"><i class="el-icon-user-solid" style="font-size: 20px;"></i> User</el-link>
             </div>
           </div>
         </div>
@@ -54,21 +44,16 @@
   </transition>
 </template>
 <script>
-import Loading from 'vue-loading-overlay'
-import 'vue-loading-overlay/dist/vue-loading.css'
 import { mapMutations } from 'vuex'
 import sweetalert from 'sweetalert'
 
 export default {
   data: function () {
     return {
-      isLoading: false,
       username: '',
-      password: ''
+      password: '',
+      loading: false
     }
-  },
-  components: {
-    Loading
   },
   methods: {
     ...mapMutations(['setUser', 'setToken', 'setApplication', 'setRoles', 'setPermissions', 'setOrganisations', 'setOrganisation']),
@@ -92,7 +77,7 @@ export default {
       const username = this.username
       const password = this.password
       if (username.length > 0 && password.length > 0) {
-        this.isLoading = true
+        this.loading = true
         this.$http.userapi.post('/login', {
           'username': username,
           'password': password
@@ -101,27 +86,49 @@ export default {
             'app_code': this.$store.state.appCode
           }
         }).then(response => {
-          this.isLoading = false
+          this.loading = false
           if (response.data.code === 400) {
             this.showAlert(response.data.message)
           } else {
-            if (response.data.organisation.length === 1) {
-              this.setToken(response.data.token)
-              this.setUser(response.data.data)
-              this.setApplication(response.data.application)
-              this.setOrganisation(response.data.organisation[0])
-              this.setRoles(response.data.roles)
-              this.setPermissions(response.data.permissions)
-              this.$router.push('/profile')
+            if (!response.data.organisation) {
+              if (!response.data.token) {
+                this.showAlert('You have not activated your account')
+              } else {
+                console.log(response.data)
+                this.setUser(response.data.data)
+                this.setToken(response.data.token)
+                this.setApplication(response.data.application)
+                this.$notify.success({
+                  title: 'Login',
+                  message: 'Logged in successfully',
+                  showClose: false
+                })
+                this.$router.push('/profile')
+              }
             } else {
-              this.setUser(response.data.data)
-              this.setApplication(response.data.application)
-              this.setOrganisations(response.data.organisation)
-              this.$router.push('/app/my-companies')
+              if (response.data.organisation.length === 1) {
+                this.setToken(response.data.token)
+                this.setUser(response.data.data)
+                this.setApplication(response.data.application)
+                this.setOrganisation(response.data.organisation[0])
+                this.setRoles(response.data.roles)
+                this.setPermissions(response.data.permissions)
+                this.$notify.success({
+                  title: 'Login',
+                  message: 'Logged in successfully',
+                  showClose: false
+                })
+                this.$router.push('/profile')
+              } else {
+                this.setUser(response.data.data)
+                this.setApplication(response.data.application)
+                this.setOrganisations(response.data.organisation)
+                this.$router.push('/app/my-companies')
+              }
             }
           }
         }).catch(error => {
-          this.isLoading = false
+          this.loading = false
           console.log(error)
         })
       }
@@ -133,6 +140,5 @@ export default {
 <style>
 .login-box {
   margin: auto;
-  padding: 30px;
 }
 </style>

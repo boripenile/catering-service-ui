@@ -26,32 +26,6 @@ export default {
   },
   methods: {
     deleteRole: function (role) {
-      sweetalert({
-        title: 'Are you sure?',
-        text: 'This Role will be permanently deleted!',
-        type: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#DD6B55',
-        confirmButtonText: 'Yes, delete it!',
-        closeOnConfirm: false
-      },
-      () => {
-        this.$http.userapi.post('/roles', null, {
-          headers: {
-            'id': role.id,
-            'action': 'deleteRole',
-            'token': this.getToken
-          }
-        }).then(response => {
-          if (response.data.code === 200) {
-            const roleIndex = this.roles.indexOf(role)
-            this.roles.splice(roleIndex, 1)
-            sweetalert('Deleted!', 'Role has been deleted.', 'success')
-          }
-        }).catch(error => {
-          console.log(error)
-        })
-      })
     },
     checkRole () {
       if (this.getRoles.find(x => x.name === 'superadmin')) {

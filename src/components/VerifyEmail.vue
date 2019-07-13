@@ -3,8 +3,7 @@
       <div class="login-box">
         <div class="vld-parent">
           <loading :active.sync="isLoading" 
-          :is-full-page="true"></loading></div>
-        <br/><br/> 
+          :is-full-page="true"></loading></div> 
         <center>
           <i class="el-icon-success" v-if="success" style="font-size: 6em; color: #67C23A;"></i>
           <i class="el-icon-error" v-if="error" style="font-size: 6em; color: #F56C6C;"></i>
@@ -12,7 +11,7 @@
           <h2>Email Verification</h2>
           <br/>
           <h4>{{ message }}</h4>
-          <br/><br/>
+          <br/>
           <el-button v-if="success" type="success" plain icon="el-icon-check" 
               @click="proceedToHomePage()">Continue</el-button>
           <el-button v-if="error" type="warning" 
@@ -85,17 +84,22 @@ export default {
             this.error = true
             this.message = response.data.message
           } else {
-            if (response.data.organisation.length === 1) {
-              this.setToken(response.data.token)
+            if (!response.data.organisation) {
               this.setUser(response.data.data)
               this.setApplication(response.data.application)
-              this.setOrganisation(response.data.organisation[0])
-              this.setRoles(response.data.roles)
-              this.setPermissions(response.data.permissions)
             } else {
-              this.setUser(response.data.data)
-              this.setApplication(response.data.application)
-              this.setOrganisations(response.data.organisation)
+              if (response.data.organisation.length === 1) {
+                this.setToken(response.data.token)
+                this.setUser(response.data.data)
+                this.setApplication(response.data.application)
+                this.setOrganisation(response.data.organisation[0])
+                this.setRoles(response.data.roles)
+                this.setPermissions(response.data.permissions)
+              } else if (response.data.organisation.length > 1) {
+                this.setUser(response.data.data)
+                this.setApplication(response.data.application)
+                this.setOrganisations(response.data.organisation)
+              }
             }
             this.success = true
             this.message = 'Your email address has been verified successfully!'

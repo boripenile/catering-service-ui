@@ -15,7 +15,7 @@
                 <!-- sidebar menu: : style can be found in sidebar.less -->
                 <ul class="sidebar-menu">
                     <li class="header">APPS</li>
-                    <li class="treeview">
+                    <li class="treeview" v-if="show">
                         <a href="#"> <i class="ti-desktop"></i> <span>Dashboard</span> <span class="pull-right-container">
               <i class="fa fa-angle-left pull-right"></i>
             </span> </a>
@@ -77,7 +77,7 @@ export default {
     Avatar
   },
   computed: {
-    ...mapGetters(['getUser', 'getRoles'])
+    ...mapGetters(['getUser', 'getRoles', 'getOrganisation'])
   },
   methods: {
     ...mapMutations(['setToken', 'setUser', 'setOrganisation']),
@@ -88,10 +88,14 @@ export default {
       this.$router.push('/app/login')
     },
     checkRole: function () {
-      if (this.getRoles.find(x => (x.name === 'superadmin' || x.name === 'admin'))) {
-        this.show = true
-      } else {
+      if (!this.getOrganisation) {
         this.show = false
+      } else {
+        if (this.getRoles.find(x => (x.name === 'superadmin' || x.name === 'admin'))) {
+          this.show = true
+        } else {
+          this.show = false
+        }
       }
     },
     profile: function () {

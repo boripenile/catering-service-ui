@@ -8,7 +8,7 @@
           </el-input>
         </div>
         <div class="col-md-3">
-          <el-button :loading="loader" type="default" icon="el-icon-search" @click="searchUser(searchEmail, callback)">Look Up</el-button>
+          <el-button :disabled="searchEmail.length < 6" :loading="loader" type="default" icon="el-icon-search" @click="searchUser(searchEmail, callback)">Look Up</el-button>
         </div>
       </div>
       <hr v-if="hasDetails" />
@@ -28,7 +28,7 @@
               <span style="float: left; color: #8492a6; font-size: 13px">{{ role.description }}</span>
             </el-option>
           </el-select>
-          <el-button :loading="loader" type="success" style="margin-left: 20px;" icon="el-icon-s-promotion" @click="sendInvite(user, roleName)">Send Invite</el-button>
+          <el-button :disabled="roleName === ''" :loading="loader" type="success" style="margin-left: 20px;" icon="el-icon-s-promotion" @click="sendInvite(user, roleName)">Send Invite</el-button>
         </div>
       </div> 
       

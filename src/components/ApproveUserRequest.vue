@@ -4,15 +4,14 @@
         <div class="vld-parent">
           <loading :active.sync="isLoading" 
           :is-full-page="true"></loading></div>
-        <br/><br/> 
         <center>
           <i class="el-icon-success" v-if="success" style="font-size: 6em; color: #67C23A;"></i>
           <i class="el-icon-error" v-if="error" style="font-size: 6em; color: #F56C6C;"></i>
 
-          <h2>User Request Approval</h2>
+          <h2>Request Approval</h2>
           <br/>
           <h4>{{ message }}</h4>
-          <br/><br/>
+          <br/>
           <el-button type="success" 
               @click="loginPage()">Login</el-button>
         </center>
